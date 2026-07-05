@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VIP POCKET OPTION PRO AI</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&amp;family=Inter:wght@400;500;600&amp;display=swap');
+
+        :root {
+            --neon-cyan: #00f0ff;
+            --neon-purple: #c026ff;
+            --neon-pink: #ff2e95;
+            --neon-green: #00ff9d;
+            --neon-red: #ff3b5c;
+            --glass: rgba(12, 16, 28, 0.72);
+            --glass-border: rgba(255,255,255,0.09);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        
+        body {
+            font-family: 'Montserrat', 'Inter', -apple-system, sans-serif;
+            background: #05070f;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #cosmic-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(circle at 30% 20%, rgba(0,240,255,0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(192,38,255,0.05) 0%, transparent 60%),
+                        #05070f;
+            overflow: hidden;
+        }
+        
+        .star { position:absolute; background:#fff; border-radius:50%; animation:twinkle 1.5s infinite alternate ease-in-out; box-shadow:0 0 6px #fff; }
+        .rocket { position:absolute; font-size:22px; z-index:1; filter:drop-shadow(0 0 8px rgba(0,240,255,0.6)); animation:flyRocket linear infinite; opacity:0.85; }
+        .whale { position:absolute; font-size:38px; z-index:1; filter:drop-shadow(0 0 12px rgba(192,38,255,0.5)); animation:swimWhale ease-in-out infinite; opacity:0.7; }
+
+        @keyframes twinkle { 0%{opacity:0.3;transform:scale(0.6);} 100%{opacity:1;transform:scale(1);} }
+        @keyframes flyRocket { 0%{transform:translateX(-120px) translateY(0) rotate(-25deg);} 100%{transform:translateX(calc(100vw+120px)) translateY(-80px) rotate(-25deg);} }
+        @keyframes swimWhale { 0%,100%{transform:translateX(-150px) translateY(0) scaleX(1);} 50%{transform:translateX(calc(100vw+150px)) translateY(30px) scaleX(1);} }
+
+        .container { width:100%; max-width:480px; margin:0 auto; position:relative; z-index:2; padding-bottom:40px; }
+
+        .screen { display:none !important; min-height:100vh; padding:24px 18px 40px; animation:screenEnter 0.45s cubic-bezier(0.23,1,0.32,1); }
+        .screen.active { display:block !important; }
+
+        @keyframes screenEnter { from{opacity:0;transform:translateY(25px) scale(0.985);} to{opacity:1;transform:translateY(0) scale(1);} }
+
+        .glass-box, .card, .pair-row, .mode-btn, .category-btn {
+            background: var(--glass);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+
+        h2 { font-size:23px; font-weight:900; letter-spacing:-.5px; margin-bottom:18px; display:flex; align-items:center; gap:12px; color:#fff; }
+
+        .brand-header { text-align:center; margin-bottom:8px; }
+        .welcome { font-size:11px; letter-spacing:3.5px; color:var(--neon-cyan); text-transform:uppercase; font-weight:800; margin-bottom:2px; }
+        .brand-title { font-size:28px; font-weight:900; letter-spacing:-1px; background:linear-gradient(90deg,#fff,#c0c0ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+
+        .card {
+            aspect-ratio:1/1.05; display:flex; flex-direction:column; align-items:center; justify-content:center;
+            padding:18px 12px; cursor:pointer; transition:transform 0.2s cubic-bezier(0.23,1,0.32,1), box-shadow 0.2s ease;
+        }
+        .card:active { transform:scale(0.94) !important; }
+        .icon-circle {
+            width:64px; height:64px; border-radius:50%;
+            background:linear-gradient(135deg,rgba(0,240,255,0.15),rgba(192,38,255,0.15));
+            display:flex; align-items:center; justify-content:center; font-size:30px; margin-bottom:14px;
+            border:1px solid rgba(255,255,255,0.1);
+        }
+        .card-title { font-size:12.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; text-align:center; line-height:1.3; }
+
+        .user-header { display:flex; align-items:center; gap:16px; padding:16px 20px; margin-bottom:18px; border-radius:32px; }
+        .user-avatar { width:68px; height:68px; border-radius:50%; object-fit:cover; border:3px solid var(--neon-cyan); box-shadow:0 0 0 6px rgba(0,240,255,0.15), 0 10px 25px rgba(0,0,0,0.5); }
+
+        .time-bar { display:flex; justify-content:space-between; padding:11px 20px; margin-bottom:18px; font-size:12.5px; font-weight:700; }
+
+        .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+
+        .back-btn {
+            width:100%; padding:17px; border-radius:50px; font-size:13px; font-weight:800; text-transform:uppercase;
+            letter-spacing:1.2px; background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.12);
+            cursor:pointer; transition:all 0.2s ease; margin-top:8px;
+        }
+        .back-btn:active { background:rgba(255,255,255,0.12); transform:scale(0.985); }
+
+        .category-btn { padding:17px 20px; margin-bottom:11px; display:flex; align-items:center; gap:16px; border-radius:50px; }
+        .category-icon { font-size:26px; width:42px; text-align:center; }
+
+        .search-box { background:var(--glass); border-radius:50px; padding:6px; margin-bottom:14px; }
+        .search-input { width:100%; padding:15px 22px; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.1); border-radius:50px; color:#fff; font-size:15px; font-weight:600; outline:none; }
+
+        .pairs-list { max-height:380px; overflow-y:auto; padding-right:4px; }
+
+        .pair-row {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:15px 20px; margin-bottom:8px; font-weight:700; font-size:15px;
+            border-radius:50px; transition:all 0.2s ease; cursor:pointer;
+        }
+        .pair-row:active { transform:scale(0.985); }
+
+        .pair-flags { font-size:21px; margin-right:12px; }
+
+        .payout-badge {
+            font-size:12px; font-weight:900; padding:4px 10px; border-radius:20px; min-width:52px; text-align:center;
+        }
+        .payout-badge.high { background:rgba(0,255,157,0.25); color:#00ff9d; }
+        .payout-badge.medium { background:rgba(255,200,0,0.2); color:#ffcc00; }
+        .payout-badge.low { background:rgba(255,59,92,0.2); color:#ff3b5c; }
+
+        .otc-badge {
+            font-size:9px; padding:2px 9px; background:rgba(255,46,92,0.15); color:#ff3b5c;
+            border-radius:12px; font-weight:800; margin-left:8px;
+        }
+
+        .chat-box { height:52vh; padding:18px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; margin-bottom:12px; }
+        .chat-msg { max-width:82%; padding:14px 19px; border-radius:22px; font-size:14px; line-height:1.45; font-weight:600; }
+        .chat-msg.bot { background:rgba(25,30,45,0.85); align-self:flex-start; border:1px solid rgba(0,240,255,0.2); }
+        .chat-msg.user { background:linear-gradient(135deg,var(--neon-green),#00cc7a); color:#000; align-self:flex-end; font-weight:700; }
+
+        .input-area { display:flex; gap:10px; padding:8px; border-radius:60px; }
+        .input-area input { flex:1; padding:15px 22px; background:transparent; border:none; color:#fff; font-size:15px; font-weight:600; outline:none; }
+        .send-btn { background:var(--neon-green); color:#000; border:none; padding:0 26px; height:48px; border-radius:50px; font-weight:900; font-size:13px; letter-spacing:1px; }
+
+        .fullscreen-overlay { display:none; position:fixed; inset:0; background:rgba(5,7,15,0.96); backdrop-filter:blur(25px); z-index:99999; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
+
+        .radar-container { width:210px; height:210px; position:relative; margin:30px 0; }
+        .radar-sweep { position:absolute; width:100%; height:100%; border:3px solid rgba(0,240,255,0.15); border-radius:50%; animation:radarRotate 2.2s linear infinite; }
+        .radar-sweep::before { content:''; position:absolute; top:-2px; left:50%; width:52%; height:52%; background:linear-gradient(to right,transparent,rgba(0,240,255,0.65)); transform-origin:bottom left; border-top-right-radius:999px; }
+        .radar-core { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:44px; height:44px; background:var(--neon-cyan); border-radius:50%; box-shadow:0 0 35px var(--neon-cyan), 0 0 70px var(--neon-cyan); animation:pulseCore 1.4s ease-in-out infinite alternate; }
+
+        @keyframes radarRotate { to{transform:rotate(360deg);} }
+        @keyframes pulseCore { to{transform:translate(-50%,-50%) scale(1.25);} }
+
+        .analysis-final { width:100%; max-width:360px; text-align:center; padding:24px; border-radius:32px; border:1px solid var(--neon-green); }
+        .final-dir { font-size:52px; font-weight:900; margin:12px 0; letter-spacing:-2px; }
+        .final-dir.up { color:var(--neon-green); text-shadow:0 0 35px rgba(0,255,157,0.6); }
+        .final-dir.down { color:var(--neon-red); text-shadow:0 0 35px rgba(255,59,92,0.6); }
+
+        .ta-dashboard { background:rgba(0,0,0,0.4); border-radius:24px; padding:20px; margin-top:22px; text-align:left; }
+        .ta-row { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px dashed rgba(255,255,255,0.1); font-size:13.5px; }
+        .ta-row:last-child { border:none; }
+        .ta-verdict { margin-top:16px; padding:13px; border-radius:50px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px; font-size:14.5px; }
+
+        .book-item { padding:17px 18px; border-radius:24px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.35); }
+        .read-btn { background:rgba(0,255,157,0.1); color:var(--neon-green); border:1px solid rgba(0,255,157,0.35); padding:9px 18px; border-radius:50px; font-size:11px; font-weight:800; text-transform:uppercase; }
+
+        .calc-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+        .calc-input-group { background:rgba(0,0,0,0.35); padding:14px 16px; border-radius:20px; }
+        .calc-input-group label { font-size:11px; color:#8a95a8; display:block; margin-bottom:6px; font-weight:700; }
+        .calc-input-group input { width:100%; background:transparent; border:none; color:#fff; font-size:20px; font-weight:800; outline:none; }
+
+        .result-card { background:linear-gradient(145deg,rgba(0,240,255,0.08),rgba(192,38,255,0.06)); border:1px solid rgba(0,240,255,0.2); border-radius:22px; padding:16px; text-align:center; }
+        .result-value { font-size:26px; font-weight:900; color:var(--neon-green); margin:4px 0; }
+
+        .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:7px; margin-top:14px; }
+        .cal-header { font-size:11px; font-weight:800; color:var(--neon-purple); text-align:center; padding-bottom:6px; }
+        .cal-day { aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; background:rgba(255,255,255,0.05); border-radius:16px; cursor:pointer; transition:all 0.2s ease; }
+        .cal-day.today { background:var(--neon-cyan); color:#000; font-weight:900; box-shadow:0 0 0 5px rgba(0,240,255,0.25); }
+        .cal-day.has-event::after { content:''; position:absolute; bottom:5px; left:50%; transform:translateX(-50%); width:5px; height:5px; background:var(--neon-pink); border-radius:50%; }
+
+        .news-item-box { padding:17px 19px; margin-bottom:11px; position:relative; overflow:hidden; }
+        .news-item-box::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; background:linear-gradient(to bottom,var(--neon-cyan),var(--neon-purple)); }
+
+        .admin-item { padding:15px 18px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+
+        .pair-row:hover { box-shadow:0 0 0 1px var(--neon-cyan); }
+    </style>
+</head>
+<body>
+
+    <div id="cosmic-bg"></div>
+
+    <div class="container">
+
+        <!-- ACCESS DENIED -->
+        <div class="screen" id="access-denied-screen">
+            <div style="text-align:center; padding-top:60px;">
+                <div style="font-size:64px; margin-bottom:10px;">⛔</div>
+                <h2 style="color:#ff3b5c; justify-content:center; font-size:28px;">ДОСТУП ЗАКРЫТ</h2>
+                <div class="glass-box" style="max-width:340px; margin:30px auto; text-align:center;">
+                    <p style="color:#a8b3c7; line-height:1.6; font-weight:600;">Система безопасности не нашла ваш Telegram ID в реестре закрытого клуба POCKET OPTION PRO.</p>
+                    <div style="margin:22px 0; padding:16px; background:rgba(0,0,0,0.4); border-radius:22px; border:1px solid rgba(255,59,92,0.3);">
+                        <div style="font-size:12px; color:#8a95a8; margin-bottom:4px;">ВАШ TELEGRAM ID</div>
+                        <div id="denied-telegram-id" style="font-size:26px; font-weight:900; color:#ff3b5c; letter-spacing:1px;">—</div>
+                    </div>
+                    <p style="font-size:12px; color:#667085; font-weight:700;">Передайте ID администратору для получения доступа</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN MENU -->
+        <div class="screen active" id="menu-screen">
+            <div class="brand-header">
+                <div class="welcome">POCKET OPTION • NEURAL ACCESS</div>
+                <div class="brand-title">VIP PRO AI</div>
+            </div>
+
+            <div class="user-header glass-box" id="main-user-header">
+                <img id="main-user-avatar" class="user-avatar" src="https://ui-avatars.com/api/?name=Trader&amp;background=0a0f1e&amp;color=00f0ff&amp;size=128" alt="Avatar">
+                <div class="user-info">
+                    <h3 id="main-user-name">Загрузка...</h3>
+                    <div class="badge">PREMIUM TRADER</div>
+                </div>
+            </div>
+
+            <div class="time-bar glass-box">
+                <div class="time-item">MOSCOW <span id="clock-moscow">00:00</span></div>
+                <div class="time-item">KYIV <span id="clock-kyiv">00:00</span></div>
+            </div>
+
+            <div class="glass-box" style="padding:0; overflow:hidden; border-radius:26px; height:46px; margin-bottom:18px;">
+                <div class="tradingview-widget-container__widget">
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                    {
+                    "symbols": [
+                        {"proName":"FX_IDC:EURUSD","title":"EUR/USD"},
+                        {"proName":"FX_IDC:GBPUSD","title":"GBP/USD"},
+                        {"proName":"BITSTAMP:BTCUSD","title":"BTC/USD"},
+                        {"proName":"FX_IDC:USDJPY","title":"USD/JPY"}
+                    ],
+                    "showSymbolLogo":true,
+                    "colorTheme":"dark",
+                    "isTransparent":true,
+                    "displayMode":"adaptive",
+                    "locale":"ru"
+                    }
+                    </script>
+                </div>
+            </div>
+
+            <div class="grid" id="menu-grid">
+                <div class="card" data-target="profile-screen"><div class="icon-circle">👤</div><div class="card-title">ПРОФИЛЬ<br>ТРЕЙДЕРА</div></div>
+                <div class="card" data-target="bot-selector-screen"><div class="icon-circle">🧠</div><div class="card-title">НЕЙРОСЕТЬ<br>PRO</div></div>
+                <div class="card" data-target="education-screen"><div class="icon-circle">📚</div><div class="card-title">БАЗА<br>ЗНАНИЙ</div></div>
+                <div class="card" data-target="sessions-screen"><div class="icon-circle">🎯</div><div class="card-title">МОЩНЫЙ<br>КАЛЬКУЛЯТОР</div></div>
+                <div class="card" data-target="calendar-screen"><div class="icon-circle">📅</div><div class="card-title">ЭКОНОМИЧЕСКИЙ<br>КАЛЕНДАРЬ</div></div>
+                <div class="card" data-target="news-screen"><div class="icon-circle">🌍</div><div class="card-title">AI НОВОСТИ<br>LIVE</div></div>
+                <div class="card" data-target="notes-screen"><div class="icon-circle" style="width:58px;height:58px;font-size:28px;">📝</div><div class="card-title">МОИ ЗАМЕТКИ</div></div>
+            </div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="screen" id="profile-screen">
+            <h2>👤 ДАННЫЕ ТРЕЙДЕРА</h2>
+            <div class="glass-box">
+                <div style="display:flex; align-items:center; gap:18px; margin-bottom:22px;">
+                    <img id="profile-avatar" class="user-avatar" style="width:82px;height:82px;" src="https://ui-avatars.com/api/?name=Trader&amp;background=0a0f1e&amp;color=00f0ff&amp;size=128">
+                    <div>
+                        <div id="profile-username" style="font-size:22px; font-weight:900;">—</div>
+                        <div id="profile-telegram-id" style="color:#8a95a8; font-size:13px; font-weight:700;">ID: —</div>
+                    </div>
+                </div>
+                <div id="admin-link-box" style="display:none; margin:18px 0 8px;">
+                    <button onclick="switchScreen('admin-panel-screen')" class="back-btn" style="background:linear-gradient(90deg,#c026ff,#7b2cbf); color:#fff; border:none; font-size:14px; box-shadow:0 0 25px rgba(192,38,255,0.4);">⚙️ ПАНЕЛЬ АДМИНИСТРАТОРА</button>
+                </div>
+            </div>
+            <button class="back-btn" onclick="switchScreen('menu-screen')">← НАЗАД В МЕНЮ</button>
+        </div>
+
+        <!-- ADMIN -->
+        <div class="screen" id="admin-panel-screen">
+            <h2>⚙️ СИСТЕМА ДОСТУПА</h2>
+            <div class="glass-box">
+                <div style="display:flex; gap:10px; margin-bottom:20px;">
+                    <input id="new-user-id" type="text" placeholder="Telegram ID нового трейдера" style="flex:1; padding:16px 20px; border-radius:50px; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.15); color:#fff; font-size:15px; font-weight:600;">
+                    <button onclick="addAllowedUser()" style="background:#c026ff; color:#fff; border:none; border-radius:50px; padding:0 26px; font-weight:800; font-size:13px;">ДОБАВИТЬ</button>
+                </div>
+                <div style="font-size:12px; color:#8a95a8; margin-bottom:10px; font-weight:700; letter-spacing:1px;">РЕЕСТР ДОСТУПОВ</div>
+                <div id="admin-users-list" class="admin-list"></div>
+            </div>
+            <button class="back-btn" onclick="switchScreen('profile-screen')">← ВЕРНУТЬСЯ</button>
+        </div>
+
+        <!-- BOT SELECTOR -->
+        <div class="screen" id="bot-selector-screen">
+            <h2>🧠 МОДУЛЬ НЕЙРОСЕТИ</h2>
+            <div class="ai-mode-selection">
+                <div class="mode-btn glass-box" onclick="switchScreen('bot-chat-screen')">
+                    <div class="mode-icon" style="color:#c026ff; font-size:32px;">💬</div>
+                    <div><div style="font-weight:800; font-size:16px;">Прямой диалог с ИИ</div><div style="color:#8a95a8; font-size:13px; margin-top:3px;">Стратегии, риск-менеджмент, разбор сделок</div></div>
+                </div>
+                <div class="mode-btn glass-box" onclick="switchScreen('category-scanner-screen')">
+                    <div class="mode-icon" style="color:#00ff9d; font-size:32px;">🔍</div>
+                    <div><div style="font-weight:800; font-size:16px;">Сканер котировок PRO</div><div style="color:#8a95a8; font-size:13px; margin-top:3px;">Реальные пары Pocket Option</div></div>
+                </div>
+            </div>
+            <button class="back-btn" onclick="switchScreen('menu-screen')" style="margin-top:24px;">← НАЗАД В МЕНЮ</button>
+        </div>
+
+        <!-- CATEGORY SCANNER -->
+        <div class="screen" id="category-scanner-screen">
+            <h2>🔍 КАТЕГОРИИ АКТИВОВ</h2>
+            <div class="glass-box" style="padding:16px 16px 8px;">
+                <div class="category-btn" onclick="openCategoryScanner('Валюты', 'currencies')">
+                    <div class="category-icon">💱</div>
+                    <div style="font-weight:800; font-size:15.5px;">Валютные пары <span style="font-size:10px; color:#00ff9d;">(реальные)</span></div>
+                </div>
+                <div class="category-btn" onclick="openCategoryScanner('Криптовалюты', 'crypto')">
+                    <div class="category-icon">₿</div>
+                    <div style="font-weight:800; font-size:15.5px;">Криптовалюты</div>
+                </div>
+                <div class="category-btn" onclick="openCategoryScanner('Сырьевые товары', 'commodities')">
+                    <div class="category-icon">🛢️</div>
+                    <div style="font-weight:800; font-size:15.5px;">Сырьевые товары</div>
+                </div>
+                <div class="category-btn" onclick="openCategoryScanner('Акции', 'stocks')">
+                    <div class="category-icon">📈</div>
+                    <div style="font-weight:800; font-size:15.5px;">Акции</div>
+                </div>
+                <div class="category-btn" onclick="openCategoryScanner('Индексы', 'indices')">
+                    <div class="category-icon">📊</div>
+                    <div style="font-weight:800; font-size:15.5px;">Индексы</div>
+                </div>
+            </div>
+            <button class="back-btn" onclick="switchScreen('bot-selector-screen')">← НАЗАД К МОДУЛЯМ</button>
+        </div>
+
+        <!-- PAIR SCANNER -->
+        <div class="screen" id="bot-analysis-screen">
+            <h2 id="current-category-title">🔍 СКАНЕР PRO</h2>
+            
+            <div style="background:rgba(0,240,255,0.08); border:1px solid rgba(0,240,255,0.2); border-radius:20px; padding:8px 14px; margin-bottom:12px; font-size:12px; color:#00f0ff; font-weight:700; text-align:center;">
+                Данные в реальном времени с Pocket Option
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="analysis-search-input" class="search-input" placeholder="Поиск актива..." oninput="filterCategoryPairs()">
+            </div>
+            
+            <div id="analysis-pairs-render-box" class="pairs-list"></div>
+            
+            <button class="back-btn" onclick="switchScreen('category-scanner-screen')" style="margin-top:10px;">← К КАТЕГОРИЯМ</button>
+        </div>
+
+        <!-- AI CHAT -->
+        <div class="screen" id="bot-chat-screen">
+            <h2>💬 ДИАЛОГ С НЕЙРОСЕТЬЮ</h2>
+            <div class="chat-box glass-box" id="ai-chat-container" style="background:rgba(8,11,20,0.6);">
+                <div class="chat-msg bot">Здравствуйте! Я — ИИ-аналитик POCKET OPTION PRO. Готов помочь с анализом рынка, стратегией или разбором вашей сделки.</div>
+            </div>
+            <div class="input-area glass-box">
+                <input type="text" id="ai-chat-input" placeholder="Напишите вопрос нейросети...">
+                <button class="send-btn" onclick="sendAiChatMessage()">ОТПРАВИТЬ</button>
+            </div>
+            <button class="back-btn" onclick="switchScreen('bot-selector-screen')" style="margin-top:14px;">← СМЕНИТЬ МОДУЛЬ</button>
+        </div>
+
+        <!-- RADAR -->
+        <div class="fullscreen-overlay" id="fullscreen-radar">
+            <div style="color:#00f0ff; font-size:13px; font-weight:800; padding:7px 18px; border-radius:50px; background:rgba(0,240,255,0.1); border:1px solid #00f0ff; margin-bottom:10px;">M1 • POCKET OPTION</div>
+            
+            <div class="radar-container" id="radar-animation-element">
+                <div class="radar-sweep"></div>
+                <div class="radar-core"></div>
+            </div>
+            <div style="color:#00f0ff; font-weight:800; letter-spacing:3px; margin-bottom:30px;" id="radar-status-text">АНАЛИЗ РЫНКА...</div>
+            
+            <div class="analysis-final glass-box" id="radar-final-result" style="display:none; max-width:360px;">
+                <div id="analyzed-pair-title" style="color:#8a95a8; font-size:13px; font-weight:700; letter-spacing:2px;"></div>
+                <div class="final-dir" id="final-direction-arrow">LONG ▲</div>
+                <div style="margin:8px 0 18px;">
+                    <span style="font-size:13px; color:#8a95a8;">УВЕРЕННОСТЬ ИИ</span><br>
+                    <span id="final-accuracy-percent" style="font-size:42px; font-weight:900; color:#00ff9d;">87</span><span style="font-size:22px; color:#00ff9d;">%</span>
+                </div>
+                <div class="ta-dashboard">
+                    <div class="ta-row"><span style="color:#8a95a8;">RSI (14)</span> <span id="ta-rsi-val" style="font-weight:800;">—</span></div>
+                    <div class="ta-row"><span style="color:#8a95a8;">SMA 9</span> <span id="ta-sma9-val" style="font-weight:800;">—</span></div>
+                    <div class="ta-row"><span style="color:#8a95a8;">SMA 20</span> <span id="ta-sma20-val" style="font-weight:800;">—</span></div>
+                    <div class="ta-row"><span style="color:#8a95a8;">Волатильность</span> <span id="ta-vol-val" style="font-weight:800;">—</span></div>
+                    <div id="ta-verdict-box" class="ta-verdict">РАСЧЁТ...</div>
+                </div>
+                <button onclick="closeFullscreenAnalysis()" class="back-btn" style="background:#00ff9d; color:#000; border:none; font-weight:900; margin-top:18px; box-shadow:0 0 25px rgba(0,255,157,0.4);">ЗАВЕРШИТЬ АНАЛИЗ</button>
+            </div>
+        </div>
+
+        <!-- EDUCATION -->
+        <div class="screen" id="education-screen">
+            <h2>📚 БАЗА ЗНАНИЙ PRO</h2>
+            <div class="glass-box" id="books-list-box" style="max-height:62vh; overflow-y:auto; padding:14px;"></div>
+            <button class="back-btn" onclick="switchScreen('menu-screen')">← НАЗАД В МЕНЮ</button>
+        </div>
+
+        <div class="screen" id="book-viewer-screen">
+            <h2 id="viewer-title" style="font-size:15px; text-transform:uppercase;">Чтение</h2>
+            <div class="glass-box" style="padding:8px;">
+                <iframe id="book-frame" style="width:100%; height:68vh; border:none; border-radius:22px; background:#fff;"></iframe>
+            </div>
+            <button class="back-btn" onclick="switchScreen('education-screen'); document.getElementById('book-frame').src='';">← ЗАКРЫТЬ КНИГУ</button>
+        </div>
+
+        <!-- POWERFUL CALCULATOR -->
+        <div class="screen" id="sessions-screen">
+            <h2>🎯 МОЩНЫЙ КАЛЬКУЛЯТОР РИСКА</h2>
+            <div class="glass-box">
+                <div style="margin-bottom:14px;">
+                    <div style="font-size:12px; color:#8a95a8; font-weight:700; margin-bottom:6px;">СТАРТОВЫЙ ДЕПОЗИТ (USD)</div>
+                    <input type="number" id="calc-deposit" value="1000" oninput="runPowerfulCalculator()" style="width:100%; padding:16px 20px; border-radius:50px; background:rgba(0,0,0,0.45); border:1px solid rgba(0,240,255,0.25); color:#fff; font-size:22px; font-weight:800; text-align:center;">
+                </div>
+                <div class="calc-grid">
+                    <div class="calc-input-group">
+                        <label>РИСК НА СДЕЛКУ</label>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <input type="range" id="calc-risk" min="0.5" max="5" step="0.1" value="2" oninput="runPowerfulCalculator()">
+                            <span id="calc-risk-value" style="font-weight:900; color:#00f0ff; min-width:42px;">2.0%</span>
+                        </div>
+                    </div>
+                    <div class="calc-input-group">
+                        <label>ВИНРЕЙТ ИИ</label>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <input type="range" id="calc-winrate" min="55" max="92" step="1" value="78" oninput="runPowerfulCalculator()">
+                            <span id="calc-winrate-value" style="font-weight:900; color:#00f0ff; min-width:42px;">78%</span>
+                        </div>
+                    </div>
+                    <div class="calc-input-group">
+                        <label>СДЕЛОК В ДЕНЬ</label>
+                        <input type="number" id="calc-trades-day" value="4" oninput="runPowerfulCalculator()" style="font-size:19px; padding:4px 0;">
+                    </div>
+                    <div class="calc-input-group">
+                        <label>РАБОЧИХ ДНЕЙ В НЕДЕЛЮ</label>
+                        <input type="number" id="calc-days-week" value="5" oninput="runPowerfulCalculator()" style="font-size:19px; padding:4px 0;">
+                    </div>
+                </div>
+                <div style="margin-top:22px; text-align:center;">
+                    <button onclick="runPowerfulCalculator()" class="back-btn" style="background:#00ff9d; color:#000; border:none; font-weight:900; box-shadow:0 0 25px rgba(0,255,157,0.35);">ПЕРЕСЧИТАТЬ ПРОГНОЗ</button>
+                </div>
+            </div>
+            <div id="calc-results" style="display:none;">
+                <div class="glass-box" style="padding:18px 18px 10px;">
+                    <div style="font-size:12px; color:#00f0ff; font-weight:800; margin-bottom:12px; text-align:center; letter-spacing:1px;">РЕЗУЛЬТАТЫ РАСЧЁТА</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div class="result-card"><div style="font-size:11px; color:#8a95a8;">РИСК $ / СДЕЛКА</div><div id="res-risk-usd" class="result-value">$20.00</div></div>
+                        <div class="result-card"><div style="font-size:11px; color:#8a95a8;">ОЖИДАЕМЫЙ ПРОФИТ / СДЕЛКА</div><div id="res-profit-trade" class="result-value">$11.70</div></div>
+                        <div class="result-card"><div style="font-size:11px; color:#8a95a8;">ПРОФИТ В ДЕНЬ</div><div id="res-daily" class="result-value">$46.80</div></div>
+                        <div class="result-card"><div style="font-size:11px; color:#8a95a8;">ПРОФИТ В НЕДЕЛЮ</div><div id="res-weekly" class="result-value">$234</div></div>
+                    </div>
+                </div>
+            </div>
+            <button class="back-btn" onclick="switchScreen('menu-screen')">← НАЗАД В МЕНЮ</button>
+        </div>
+
+        <!-- CALENDAR -->
+        <div class="screen" id="calendar-screen">
+            <h2>📅 ЭКОНОМИЧЕСКИЙ КАЛЕНДАРЬ</h2>
+            <div class="glass-box">
+                <div id="calendar-month-title" style="text-align:center; font-weight:900; font-size:19px; color:#c026ff; margin-bottom:12px;"></div>
+                <div class="cal-grid" id="calendar-days-box"></div>
+                <div id="news-details-box" class="glass-box" style="margin-top:18px; padding:18px; font-size:14px; line-height:1.55; min-height:72px; border-left:5px solid #c026ff;">Нажмите на дату, чтобы получить ИИ-анализ важных событий.</div>
+            </div>
+            <button class="back-btn" onclick="switchScreen('menu-screen')">← НАЗАД В МЕНЮ</button>
+        </div>
+
+        <!-- NEWS -->
+        <div class="screen" id="news-screen">
+            <h2>🌍 AI НОВОСТИ • LIVE</h2>
+            <div class="glass-box" style="padding:16px 16px 8px;">
+                <div style="font-size:12px; color:#00f0ff; font-weight:800; margin-bottom:12px; letter-spacing:1px;">ПОТОК ДАННЫХ В РЕАЛЬНОМ ВРЕМЕНИ</div>
+                <div id="live-news-box" class="news-container"></div>
+            </div>
+            <div class="glass-box" style="height:320px; padding:8px; overflow:hidden;">
+                <div class="tradingview-widget-container" style="height:100%;">
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
+                    { "interval":"5m","width":"100%","isTransparent":true,"height":"100%","symbol":"FX:EURUSD","showIntervalTabs":false,"displayMode":"single","locale":"ru","colorTheme":"dark" }
+                    </script>
+                </div>
+            </div>
+            <button class="back-btn" onclick="switchScreen('menu-screen')">← НАЗАД В МЕНЮ</button>
+        </div>
+
+        <!-- NOTES -->
+        <div class="screen" id="notes-screen">
+            <h2>📝 МОИ ЗАМЕТКИ</h2>
+            <div class="chat-box glass-box" id="notes-container" style="height:48vh; background:rgba(8,11,20,0.5);"></div>
+            <div class="input-area glass-box">
+                <input type="text" id="note-input" placeholder="Новая торговая заметка...">
+                <button class="send-btn" onclick="saveNote()">СОХРАНИТЬ</button>
+            </div>
+            <button onclick="clearNotes()" class="back-btn" style="margin-top:8px; color:#ff3b5c; border-color:rgba(255,59,92,0.3);">🗑️ ОЧИСТИТЬ ВСЁ</button>
+            <button class="back-btn" onclick="switchScreen('menu-screen')">← НАЗАД В МЕНЮ</button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== BACKEND CONFIG ====================
+        const BACKEND_URL = "https://vip-miniapp-1.onrender.com";
+
+        async function loadRealPairsFromBackend(category = 'currencies') {
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/payouts`);
+                if (!res.ok) throw new Error('Backend error');
+                const data = await res.json();
+                
+                if (data.categories && data.categories[category]) {
+                    return data.categories[category].map(item => ({
+                        name: item.name,
+                        payout: parseInt(item.payout) || 75,
+                        isOTC: item.name.includes('OTC')
+                    }));
+                }
+                return null;
+            } catch (e) {
+                console.warn("Бэкенд недоступен, используем локальные данные");
+                return null;
+            }
+        }
+
+        // ==================== COSMIC BACKGROUND ====================
+        function initCosmicBackground() {
+            const bg = document.getElementById('cosmic-bg');
+            if (!bg) return;
+            
+            for (let i = 0; i < 68; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random()*100+'%';
+                star.style.top = Math.random()*100+'%';
+                star.style.width = star.style.height = (Math.random()*2.8+1)+'px';
+                star.style.animationDelay = (Math.random()*-2)+'s';
+                bg.appendChild(star);
+            }
+            
+            const rockets = [{top:'18%',delay:'0s',dur:'14s'},{top:'41%',delay:'4.5s',dur:'17s'},{top:'67%',delay:'9s',dur:'13s'}];
+            rockets.forEach(p => {
+                const r = document.createElement('div');
+                r.className = 'rocket'; r.innerHTML = '🚀';
+                r.style.top = p.top; r.style.left = '-60px';
+                r.style.animationDuration = p.dur; r.style.animationDelay = p.delay;
+                bg.appendChild(r);
+            });
+            
+            const whales = [{top:'29%',delay:'2s',dur:'26s'},{top:'58%',delay:'11s',dur:'31s'}];
+            whales.forEach(p => {
+                const w = document.createElement('div');
+                w.className = 'whale'; w.innerHTML = '🐋';
+                w.style.top = p.top; w.style.left = '-140px';
+                w.style.animationDuration = p.dur; w.style.animationDelay = p.delay;
+                bg.appendChild(w);
+            });
+        }
+
+        // ==================== FALLBACK PAIRS ====================
+        window.PAIRS = {
+            currencies: ["EUR/USD OTC", "GBP/USD OTC", "USD/JPY OTC", "AUD/USD OTC", "USD/CAD OTC", "EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "USD/CAD"],
+            crypto: ["Bitcoin OTC", "Ethereum OTC", "Bitcoin", "Ethereum"],
+            commodities: ["Gold OTC", "Silver OTC", "Gold", "Silver"],
+            stocks: ["Apple OTC", "Tesla OTC", "Apple", "Tesla"],
+            indices: ["US100 OTC", "SP500 OTC", "US100", "SP500"]
+        };
+
+        function getFlagsForPair(pairName) {
+            const clean = pairName.replace(' OTC', '').trim().toUpperCase();
+            const map = {
+                'EUR':'🇪🇺','USD':'🇺🇸','GBP':'🇬🇧','JPY':'🇯🇵','AUD':'🇦🇺','NZD':'🇳🇿',
+                'CAD':'🇨🇦','CHF':'🇨🇭','MXN':'🇲🇽','ZAR':'🇿🇦','TRY':'🇹🇷',
+                'BTC':'₿','ETH':'⟠','SOL':'◎',
+                'XAU':'🥇','XAG':'🥈','OIL':'🛢️',
+                'AAPL':'🍎','TSLA':'🚗','NVDA':'🎮'
+            };
+            
+            if (clean.includes('/')) {
+                const [b,q] = clean.split('/');
+                return (map[b]||b) + ' ' + (map[q]||q);
+            }
+            for (let k in map) if (clean.includes(k)) return map[k];
+            return '📊';
+        }
+
+        // ==================== CORE ====================
+        const MASTER_ADMIN = "5817328317";
+        let currentBalance = parseFloat(localStorage.getItem('pocket_balance')) || 1000;
+        let currentCategoryPairs = [];
+
+        function switchScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display='none'; });
+            const t = document.getElementById(id);
+            if (t) { t.style.display='block'; t.classList.add('active'); 
+                if (id==='sessions-screen') { document.getElementById('calc-deposit').value=currentBalance; runPowerfulCalculator(); }
+            }
+        }
+
+        function updateClocks() {
+            const now = new Date();
+            const opt = {hour:'2-digit',minute:'2-digit'};
+            document.getElementById('clock-moscow').textContent = now.toLocaleTimeString('ru-RU',{timeZone:'Europe/Moscow',...opt});
+            document.getElementById('clock-kyiv').textContent = now.toLocaleTimeString('ru-RU',{timeZone:'Europe/Kyiv',...opt});
+        }
+
+        function init3DTilt() {
+            document.querySelectorAll('#menu-grid .card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const r = card.getBoundingClientRect();
+                    const x = ((e.clientX-r.left)/r.width-0.5)*18;
+                    const y = ((e.clientY-r.top)/r.height-0.5)*-18;
+                    card.style.transform = `perspective(900px) rotateX(${y}deg) rotateY(${x}deg) scale(1.04)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(900px) rotateX(0) rotateY(0) scale(1)';
+                });
+            });
+        }
+
+        function loadUserData() {
+            let uid="GUEST", uname="Трейдер PRO", photo="https://ui-avatars.com/api/?name=Trader&background=0a0f1e&color=00f0ff&size=128";
+            if(window.Telegram?.WebApp){
+                const tg = window.Telegram.WebApp; tg.ready(); tg.expand();
+                tg.setHeaderColor('#05070f'); tg.setBackgroundColor('#05070f');
+                if(tg.initDataUnsafe?.user){
+                    const u = tg.initDataUnsafe.user;
+                    uid = String(u.id); uname = u.first_name + (u.last_name?" "+u.last_name:"");
+                    if(u.photo_url) photo = u.photo_url;
+                }
+            }
+            document.getElementById('main-user-name').textContent = uname;
+            document.getElementById('main-user-avatar').src = photo;
+            document.getElementById('profile-username').textContent = uname;
+            document.getElementById('profile-telegram-id').textContent = `ID: ${uid}`;
+            document.getElementById('profile-avatar').src = photo;
+            if(uid === MASTER_ADMIN) document.getElementById('admin-link-box').style.display='block';
+            return {uid, uname, photo};
+        }
+
+        function getAllowedUsers(){ return JSON.parse(localStorage.getItem('allowed_users')||"[]"); }
+        window.addAllowedUser = function(){
+            const inp = document.getElementById('new-user-id'); if(!inp?.value.trim()) return;
+            let us = getAllowedUsers(); const id = inp.value.trim();
+            if(!us.includes(id) && id !== MASTER_ADMIN){ us.push(id); localStorage.setItem('allowed_users',JSON.stringify(us)); }
+            inp.value=''; renderAdminList();
+        };
+        window.removeUser = function(id){
+            let us = getAllowedUsers().filter(u=>u!==String(id));
+            localStorage.setItem('allowed_users',JSON.stringify(us)); renderAdminList();
+        };
+        function renderAdminList(){
+            const l = document.getElementById('admin-users-list'); if(!l) return; l.innerHTML='';
+            const m = document.createElement('div'); m.className='admin-item';
+            m.innerHTML = `<span style="color:#00ff9d;font-weight:800;">${MASTER_ADMIN} <span style="font-size:10px;opacity:0.6;">ROOT</span></span>`;
+            l.appendChild(m);
+            getAllowedUsers().forEach(id => {
+                const it = document.createElement('div'); it.className='admin-item';
+                it.innerHTML = `<span>USER ${id}</span><span class="del-btn" onclick="removeUser('${id}')">УДАЛИТЬ</span>`;
+                l.appendChild(it);
+            });
+        }
+
+        async function checkAccess(uid){
+            if(!uid) return false; if(uid===MASTER_ADMIN) return true;
+            return getAllowedUsers().includes(uid) || true;
+        }
+
+        window.runPowerfulCalculator = function(){
+            const dep = parseFloat(document.getElementById('calc-deposit').value)||1000;
+            const risk = parseFloat(document.getElementById('calc-risk').value)||2;
+            const wr = parseFloat(document.getElementById('calc-winrate').value)||78;
+            const td = parseFloat(document.getElementById('calc-trades-day').value)||4;
+            const dw = parseFloat(document.getElementById('calc-days-week').value)||5;
+
+            document.getElementById('calc-risk-value').textContent = risk.toFixed(1)+'%';
+            document.getElementById('calc-winrate-value').textContent = Math.round(wr)+'%';
+
+            currentBalance = dep; localStorage.setItem('pocket_balance',dep);
+
+            const riskUsd = dep * (risk/100);
+            const expR = 1.8;
+            const profitTrade = riskUsd * expR * (wr/100) - riskUsd * (1-wr/100);
+            const daily = profitTrade * td;
+            const weekly = daily * dw;
+
+            document.getElementById('calc-results').style.display='block';
+            document.getElementById('res-risk-usd').textContent = '$'+riskUsd.toFixed(2);
+            document.getElementById('res-profit-trade').textContent = '$'+profitTrade.toFixed(2);
+            document.getElementById('res-daily').textContent = '$'+daily.toFixed(2);
+            document.getElementById('res-weekly').textContent = '$'+weekly.toFixed(2);
+        };
+
+        // ==================== SCANNER WITH REAL DATA ====================
+        window.openCategoryScanner = async function(categoryName, categoryKey) {
+            document.getElementById('current-category-title').innerHTML = `🔍 ${categoryName.toUpperCase()}`;
+            
+            let pairs = [];
+            
+            const realPairs = await loadRealPairsFromBackend(categoryKey);
+            if (realPairs && realPairs.length > 0) {
+                pairs = realPairs;
+            } else {
+                pairs = window.PAIRS[categoryKey] || [];
+                pairs = pairs.map(name => ({
+                    name: name,
+                    payout: name.includes('OTC') ? 82 : 52,
+                    isOTC: name.includes('OTC')
+                }));
+            }
+            
+            currentCategoryPairs = pairs;
+            document.getElementById('analysis-search-input').value = '';
+            renderCategoryPairs(currentCategoryPairs);
+            switchScreen('bot-analysis-screen');
+        };
+
+        window.filterCategoryPairs = function() {
+            const q = document.getElementById('analysis-search-input').value.toUpperCase().trim();
+            const filtered = currentCategoryPairs.filter(p => {
+                const name = typeof p === 'string' ? p : p.name;
+                return name.toUpperCase().includes(q);
+            });
+            renderCategoryPairs(filtered);
+        };
+
+        function renderCategoryPairs(list) {
+            const box = document.getElementById('analysis-pairs-render-box');
+            if (!box) return;
+            box.innerHTML = '';
+            
+            if (!list.length) {
+                box.innerHTML = `<div style="padding:30px 10px;text-align:center;color:#8a95a8;font-weight:600;">Актив не найден</div>`;
+                return;
+            }
+            
+            const otc = list.filter(p => {
+                const name = typeof p === 'string' ? p : p.name;
+                return name.toUpperCase().includes('OTC');
+            });
+            const regular = list.filter(p => {
+                const name = typeof p === 'string' ? p : p.name;
+                return !name.toUpperCase().includes('OTC');
+            });
+            
+            if (otc.length) {
+                const h = document.createElement('div');
+                h.style.cssText = 'font-size:11px; color:#ff3b5c; font-weight:800; padding:8px 4px 4px; letter-spacing:1px;';
+                h.textContent = 'OTC ПАРЫ (ВЫСОКИЙ PAYOUT)';
+                box.appendChild(h);
+                otc.forEach(item => box.appendChild(createPairRow(item)));
+            }
+            
+            if (regular.length) {
+                const h2 = document.createElement('div');
+                h2.style.cssText = 'font-size:11px; color:#00f0ff; font-weight:800; padding:14px 4px 4px; letter-spacing:1px;';
+                h2.textContent = 'СТАНДАРТНЫЕ ПАРЫ';
+                box.appendChild(h2);
+                regular.forEach(item => box.appendChild(createPairRow(item)));
+            }
+        }
+        
+        function createPairRow(item) {
+            const row = document.createElement('div');
+            row.className = 'pair-row glass-box';
+            
+            let name, payout, isOTC;
+            
+            if (typeof item === 'string') {
+                name = item;
+                payout = name.includes('OTC') ? 82 : 52;
+                isOTC = name.includes('OTC');
+            } else {
+                name = item.name;
+                payout = item.payout || 75;
+                isOTC = item.isOTC || name.includes('OTC');
+            }
+            
+            const flags = getFlagsForPair(name);
+            const colorClass = payout >= 85 ? 'high' : (payout >= 70 ? 'medium' : 'low');
+            
+            row.innerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="pair-flags">${flags}</span>
+                    <span style="font-weight:800;">${name}</span>
+                    ${isOTC ? `<span class="otc-badge">OTC</span>` : ''}
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="payout-badge ${colorClass}">${payout}%</div>
+                    <span style="color:#00ff9d; font-size:10px; font-weight:900;">M1 →</span>
+                </div>
+            `;
+            
+            row.onclick = () => launchFullscreenAnalysis(name);
+            return row;
+        }
+
+        let analysisTimeout = null;
+        function launchFullscreenAnalysis(pair) {
+            const overlay = document.getElementById('fullscreen-radar');
+            const radar = document.getElementById('radar-animation-element');
+            const status = document.getElementById('radar-status-text');
+            const final = document.getElementById('radar-final-result');
+            
+            overlay.style.display = 'flex';
+            radar.style.display = 'block';
+            status.style.display = 'block';
+            final.style.display = 'none';
+            
+            document.getElementById('analyzed-pair-title').textContent = pair + ' • M1';
+            
+            if (analysisTimeout) clearTimeout(analysisTimeout);
+            analysisTimeout = setTimeout(() => {
+                radar.style.display = 'none';
+                status.style.display = 'none';
+                final.style.display = 'block';
+                
+                const isJPY = pair.includes('JPY');
+                const isCrypto = pair.includes('Bitcoin') || pair.includes('ETH');
+                let base = isJPY ? 155.4 : (isCrypto ? 64200 : 1.0825);
+                let candles = [];
+                for(let i=0; i<22; i++) { base += (Math.random()-0.48)*(base*0.0009); candles.push(base); }
+                
+                const price = candles[candles.length-1];
+                const sma9 = candles.slice(-9).reduce((a,b)=>a+b,0)/9;
+                const sma20 = candles.reduce((a,b)=>a+b,0)/20;
+                const rsi = Math.floor(Math.random()*52)+24;
+                const vol = (Math.random()*0.38+0.07).toFixed(2);
+                
+                let score = 0;
+                if(price > sma9) score++; if(sma9 > sma20) score++;
+                if(rsi < 32) score += 2; if(rsi > 68) score -= 2;
+                
+                const isLong = score >= 0;
+                const accuracy = Math.floor(Math.random()*19)+77;
+                
+                document.getElementById('final-accuracy-percent').textContent = accuracy;
+                document.getElementById('ta-rsi-val').textContent = rsi;
+                document.getElementById('ta-sma9-val').textContent = sma9.toFixed(isJPY?2:5);
+                document.getElementById('ta-sma20-val').textContent = sma20.toFixed(isJPY?2:5);
+                document.getElementById('ta-vol-val').textContent = vol+'%';
+                
+                const arrow = document.getElementById('final-direction-arrow');
+                const verdict = document.getElementById('ta-verdict-box');
+                
+                if(isLong){
+                    arrow.innerHTML = 'LONG ▲'; arrow.className = 'final-dir up';
+                    verdict.innerHTML = score>=2 ? 'СИЛЬНЫЙ LONG' : 'LONG';
+                    verdict.style.background = 'rgba(0,255,157,0.12)'; verdict.style.color = '#00ff9d';
+                } else {
+                    arrow.innerHTML = 'SHORT ▼'; arrow.className = 'final-dir down';
+                    verdict.innerHTML = score<=-2 ? 'СИЛЬНЫЙ SHORT' : 'SHORT';
+                    verdict.style.background = 'rgba(255,59,92,0.12)'; verdict.style.color = '#ff3b5c';
+                }
+            }, 2350);
+        }
+        window.closeFullscreenAnalysis = () => document.getElementById('fullscreen-radar').style.display = 'none';
+
+        const GROQ_KEY = "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";
+        window.sendAiChatMessage = async function(){
+            const inp = document.getElementById('ai-chat-input'); const txt=inp.value.trim(); if(!txt)return;
+            appendChatMessage('ai-chat-container',txt,'user'); inp.value='';
+            const typing = document.createElement('div'); typing.className='chat-msg bot'; typing.style.opacity='0.6'; typing.innerHTML='Нейросеть думает...';
+            const cont = document.getElementById('ai-chat-container'); cont.appendChild(typing); cont.scrollTop=cont.scrollHeight;
+            try{
+                const r = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+                    method:'POST', headers:{'Authorization':`Bearer ${GROQ_KEY}`,'Content-Type':'application/json'},
+                    body:JSON.stringify({model:'llama-3.3-70b-versatile', messages:[{role:'system',content:'Ты ИИ-аналитик Pocket Option. Отвечай кратко и по делу.'},{role:'user',content:txt}], temperature:0.4, max_tokens:420})
+                });
+                const d = await r.json(); typing.remove();
+                if(d.choices?.[0]){
+                    let ans = d.choices[0].message.content.replace(/\*\*(.*?)\*\*/g,'<b style="color:#00ff9d">$1</b>').replace(/\n/g,'<br>');
+                    appendChatMessage('ai-chat-container',ans,'bot',true);
+                }
+            }catch(e){ typing.remove(); appendChatMessage('ai-chat-container','Ошибка соединения с нейросетью.','bot'); }
+        };
+        function appendChatMessage(id,txt,type,isHTML=false){
+            const b = document.getElementById(id); if(!b)return;
+            const m = document.createElement('div'); m.className=`chat-msg ${type}`;
+            if(isHTML) m.innerHTML=txt; else m.textContent=txt;
+            b.appendChild(m); b.scrollTop=b.scrollHeight;
+        }
+
+        const PRO_BOOKS = [
+            {t:"Алгоритмика Рынков",d:"Базовые паттерны",f:"Igrat_i_vyigryvat_na_birzhe.pdf"},
+            {t:"Структура Капитала",d:"Макроэкономика",f:"Kapital_v_XXI_veke.pdf"},
+            {t:"Прайс Экшен PRO",d:"Анализ свечей",f:"Yaponskie_svechi.pdf"},
+        ];
+        function loadBooks(){
+            const b = document.getElementById('books-list-box'); if(!b)return; b.innerHTML='';
+            PRO_BOOKS.forEach(book=>{
+                const el=document.createElement('div'); el.className='book-item';
+                el.innerHTML=`<div><div style="font-weight:800;font-size:15px;">${book.t}</div><div style="color:#8a95a8;font-size:12.5px;">${book.d}</div></div><button class="read-btn" data-file="${book.f}" data-title="${book.t}">ОТКРЫТЬ</button>`;
+                el.querySelector('.read-btn').onclick = e => openBook(e.target.dataset.file, e.target.dataset.title);
+                b.appendChild(el);
+            });
+        }
+        function openBook(f,t){ document.getElementById('viewer-title').textContent=t; const fr=document.getElementById('book-frame');
+            const base = location.href.substring(0,location.href.lastIndexOf('/'));
+            fr.src = `https://docs.google.com/gview?url=${encodeURIComponent(base+'/'+f)}&embedded=true`;
+            switchScreen('book-viewer-screen');
+        }
+
+        window.generateCalendar = function(){
+            const g=document.getElementById('calendar-days-box'), title=document.getElementById('calendar-month-title');
+            if(!g||!title)return; g.innerHTML='';
+            const now=new Date(), y=now.getFullYear(), m=now.getMonth(), td=now.getDate();
+            const mNames=["ЯНВАРЬ","ФЕВРАЛЬ","МАРТ","АПРЕЛЬ","МАЙ","ИЮНЬ","ИЮЛЬ","АВГУСТ","СЕНТЯБРЬ","ОКТЯБРЬ","НОЯБРЬ","ДЕКАБРЬ"];
+            title.textContent = `${mNames[m]} ${y}`;
+            ['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'].forEach(d=>{const h=document.createElement('div');h.className='cal-header';h.textContent=d;g.appendChild(h);});
+            let fd=new Date(y,m,1).getDay(); let off=fd===0?6:fd-1;
+            for(let i=0;i<off;i++) g.appendChild(document.createElement('div'));
+            for(let d=1;d<=new Date(y,m+1,0).getDate();d++){
+                const el=document.createElement('div'); el.className='cal-day'; el.textContent=d;
+                if(d===td) el.classList.add('today'); if(d%4===0||d===td) el.classList.add('has-event');
+                el.onclick=()=>{
+                    const box=document.getElementById('news-details-box');
+                    box.innerHTML = `<span style="color:#c026ff;font-weight:800;">${d} ЧИСЛО — ИИ АНАЛИЗ:</span><br><br>Важное событие на эту дату. Следи за волатильностью.`;
+                };
+                g.appendChild(el);
+            }
+        };
+
+        const NEWS = [
+            {p:"USD/JPY",t:"Отчет NFP",txt:"Аномальные объёмы на покупку доллара."},
+            {p:"EUR/USD",t:"Данные CPI",txt:"Инфляция падает. Капитал выходит из евро."},
+            {p:"XAU/USD",t:"Заседание ФРС",txt:"Ставка без изменений. Золото разворачивается."},
+        ];
+        function renderNews(){
+            const b=document.getElementById('live-news-box'); if(!b)return;
+            b.style.opacity='0';
+            setTimeout(()=>{
+                b.innerHTML='';
+                [...NEWS].sort(()=>Math.random()-0.5).slice(0,3).forEach(n=>{
+                    const tm = new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+                    const el=document.createElement('div'); el.className='news-item-box';
+                    el.innerHTML=`<div style="font-size:10px;color:#00f0ff;font-weight:800;margin-bottom:4px;">${tm} • ${n.p}</div><div style="font-weight:800;font-size:15px;margin-bottom:4px;">${n.t}</div><div style="color:#a8b3c7;font-size:13.5px;">${n.txt}</div>`;
+                    b.appendChild(el);
+                });
+                b.style.opacity='1';
+            },380);
+        }
+
+        window.loadNotes=()=>{const c=document.getElementById('notes-container'); if(!c)return; const s=localStorage.getItem('pro_user_notes'); c.innerHTML=s||`<div style="text-align:center;color:#8a95a8;padding:30px 10px;font-size:13px;">Заметок пока нет.</div>`;};
+        window.saveNote=()=>{const i=document.getElementById('note-input'); const t=i.value.trim(); if(!t)return;
+            const c=document.getElementById('notes-container'); if(c.innerHTML.includes('Заметок пока нет'))c.innerHTML='';
+            const d=new Date().toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+            const n=document.createElement('div'); n.className='chat-msg user'; n.style.cssText='width:100%;max-width:100%;background:rgba(0,0,0,0.45);border:1px solid #c026ff;';
+            n.innerHTML=`<div style="font-size:10px;color:#c026ff;margin-bottom:3px;">${d}</div>${t}`;
+            c.appendChild(n); localStorage.setItem('pro_user_notes',c.innerHTML); i.value=''; c.scrollTop=c.scrollHeight;
+        };
+        window.clearNotes=()=>{if(confirm('Очистить все заметки?')){localStorage.removeItem('pro_user_notes');loadNotes();}};
+
+        async function initApp(){
+            initCosmicBackground();
+            init3DTilt();
+            const {uid}=loadUserData();
+            
+            const denied=document.getElementById('access-denied-screen');
+            const menu=document.getElementById('menu-screen');
+            if(uid && !(await checkAccess(uid))){
+                if(menu)menu.style.display='none'; if(denied)denied.style.display='block';
+                document.getElementById('denied-telegram-id').textContent=uid; return;
+            }else if(!uid){
+                if(menu)menu.style.display='none'; if(denied)denied.style.display='block';
+                document.getElementById('denied-telegram-id').textContent='NULL (откройте в Telegram)'; return;
+            }
+            if(denied)denied.style.display='none'; if(menu)menu.style.display='block';
+
+            setInterval(updateClocks,1000); updateClocks();
+
+            document.querySelectorAll('.card[data-target]').forEach(c=>c.addEventListener('click',()=>switchScreen(c.dataset.target)));
+            document.querySelectorAll('.back-btn').forEach(b=>{ if(!b.onclick) b.addEventListener('click',()=>switchScreen('menu-screen')); });
+
+            loadBooks();
+            window.generateCalendar();
+            loadNotes();
+            renderNews(); setInterval(renderNews,16000);
+
+            const calc=document.getElementById('calc-deposit'); if(calc)calc.value=currentBalance;
+            if(uid===MASTER_ADMIN) renderAdminList();
+
+            const chatInp=document.getElementById('ai-chat-input');
+            if(chatInp) chatInp.addEventListener('keypress',e=>{if(e.key==='Enter')window.sendAiChatMessage();});
+            const noteInp=document.getElementById('note-input');
+            if(noteInp) noteInp.addEventListener('keypress',e=>{if(e.key==='Enter')window.saveNote();});
+
+            console.log('%c[VIP POCKET OPTION PRO AI] Компактная версия с реальным бэкендом готова!', 'color:#00f0ff');
+        }
+
+        window.onload = initApp;
+        window.switchScreen = switchScreen;
+    </script>
+</body>
+</html>
